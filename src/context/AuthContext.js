@@ -2,11 +2,10 @@ import React, { createContext, useState, useEffect } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import axios from 'axios'
 import { BASE_URL } from '../config'
-import Navigation from '../components/Navigation'
 
 export const AuthContext = createContext()
 
-export const AuthProvider = ({ children, navigation }) => {
+export const AuthProvider = ({ children }) => {
     const [userInfo, setUserInfo] = useState()
     const [isLoading, setIsLoading] = useState()
 
