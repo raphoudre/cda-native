@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import {View, Text, StyleSheet, Button, TouchableOpacity, FlatList, ListRenderItemInfo} from 'react-native';
 import { BASE_URL } from "../config";
 
-const StockPage = () =>{
+const StockPage = ({ navigation }) =>{
 
     const [data, setData] = useState([])
 
@@ -17,6 +17,7 @@ const StockPage = () =>{
     return(
         <View style={styles.container}>
             <Text style={ styles.title }>aperçu du stock</Text>
+            <Button title="Go back" onPress={() => navigation.goBack()} />
 
             <FlatList
                 style={styles.scroll}
@@ -47,7 +48,10 @@ const styles = StyleSheet.create({
     card:{
         borderColor: "#e0e0e0",
         padding: 25,
-        backgroundColor: '#e0e0e0',
+        backgroundColor: '#3caae9',
+        shadowOpacity: 1,
+        shadowOffset: { widht: 50, height: 1},
+        shadowRadius: 2,
         borderRadius: 0,
         margin: 20,
     },
@@ -62,6 +66,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         textTransform: 'capitalize',
         padding: 10,
+        color: '#fff'
 
     },
     textDroneName:{
@@ -71,6 +76,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         textTransform: 'capitalize',
         padding: 10,
+        color: '#fff',
     },
     title: {
         marginBottom: 20,

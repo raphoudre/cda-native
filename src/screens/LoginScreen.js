@@ -1,66 +1,86 @@
-import React, {useState, useContext} from 'react'
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Button, ActivityIndicator} from "react-native";
-import { AuthContext } from '../context/AuthContext';
-import Spinner from 'react-native-loading-spinner-overlay';
+import { React, useState } from 'react'
+import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Button } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import axios from "axios";
+import { BASE_URL } from '../config';
+import { useAuth } from '../context/AuthContext';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+ 
+const LoginScreen = () => {
+    
+    const [email, setEmail] = useState()
+    const [password, setPassword] = useState()
 
-const LoginScreen = ({ navigation }) => {
+    const [isLoading, setIsLoading] = useState(false)
 
-    const [email, setEmail] = useState(null)
-    const [password, setPassword] = useState(null)
-    const {isLoading, login} = useContext(AuthContext)
+    const [_, setUser] = useAuth()
 
+    const handleLogin = () => {
+        setIsLoading(true)
+        axios({
+            method: "POST",
+            url: `${BASE_URL}/login`,
+            data:{
+                email,
+                password,
+            }
+        })
+        .then(res => {
+            setUser(res.data)
+            console.log(res.data);
+        })
+        .catch((e) => {
+            console.log(e);
+            alert(e.message)
+        })
+        .finally(() => {
+            setIsLoading(false)
+        })
+    }
+ 
     return (
-        <View style={styles.container}>
-        <Spinner visible={isLoading} />
-        <Image style={styles.image} source={require("../../assets/img/droneLogo.png")} />
-
-        <Button
-            color='red'
-            title="ACCESS WITHOUT CONNEXION"
-            onPress={() => {
-                navigation.navigate('Home');
-            }}
-        />
+        <SafeAreaView style={styles.container}>
+            <View>
+            <Image style={styles.image} source={require("../../assets/img/droneLogo.png")} />
 
         <Text style={ styles.title }>Connexion Support Technique</Text>
  
-        <StatusBar style="auto" />
         <View style={styles.inputView}>
             <TextInput
+            label="Name"
             style={styles.TextInput}
             placeholder="EMAIL"
             placeholderTextColor="#003f5c"
             value={email}
-            onChangeText={text => setEmail(text)}
+            onChangeText={setEmail}
+            iconName="email-outline"
             />
         </View>
  
         <View style={styles.inputView}>
             <TextInput
+            label="Name"
             style={styles.TextInput}
             placeholder="MOT DE PASSE"
             placeholderTextColor="#003f5c"
             value={password}
             secureTextEntry={true}
-            onChangeText={text => setPassword(text)}
+            onChangeText={setPassword}
             />
         </View>
  
-        <TouchableOpacity style={styles.loginBtn}>
-            <Button
-                style={styles.loginText}
-                title="CONNEXION"
-                onPress={() => {
-                    login(email, password)
-            }}
-            />
+        <TouchableOpacity
+            style={styles.loginBtn}
+            onPress={handleLogin}
+            loading={isLoading}>
+                <Text style={styles.textBtnLogin}>CONNEXION</Text>
         </TouchableOpacity>
 
         <Text style={ styles.copyright }>© SKY DRONE 2022</Text>
 
     </View>
-    )
+</SafeAreaView>
+  );
 }
 
 export default LoginScreen;
@@ -74,16 +94,17 @@ const styles = StyleSheet.create({
     image: {
         width: 350,
         height: 350,
-        marginBottom: 25,
+        marginBottom: 15,
         marginTop: 25,
     },
     inputView: {
         backgroundColor: "#f5f5f5",
         borderRadius: 25,
-        width: "70%",
+        width: 350,
         height: 55,
-        marginBottom: 25,
+        marginBottom: 35,
         alignItems: "center",
+        borderColor: "#20322A",
     },
     TextInput: {
         height: 0,
@@ -93,17 +114,23 @@ const styles = StyleSheet.create({
         letterSpacing: 1,
     },
     loginBtn: {
-        width: "80%",
+        alignSelf: "center",
+        width: 175,
         borderRadius: 25,
         height: 50,
         alignItems: "center",
         justifyContent: "center",
-        marginTop: 30,
+        marginTop: 0,
         backgroundColor: "#3caae9",
         fontWeight: "bold",
     },
+    textBtnLogin: {
+        color: '#fff',
+        letterSpacing: 1,
+        fontSize: 15,
+    },
     title: {
-        marginBottom: 20,
+        marginBottom: 30,
         padding: 10,
         borderRadius: 15,
         color: "#3caae9",
@@ -113,9 +140,8 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
     copyright: {
-        paddingTop: 45,
+        paddingTop: 75,
         fontSize: 10,
+        alignSelf: "center",
     },
-    errorMsg:{
-    }
 });

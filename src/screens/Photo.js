@@ -4,7 +4,7 @@ import { Camera } from 'expo-camera';
 
 
 
-const ScanScreen = () => {
+const ScanScreen = ({ navigation }) => {
     const [hasPermission, setHasPermission] = useState(null);
     const [type, setType] = useState(Camera.Constants.Type.back);
 
@@ -25,8 +25,9 @@ const ScanScreen = () => {
         <View style={styles.container}>
             <View style={styles.titleContainer}>
                 <Text style={styles.title}>
-                    Remise en stock
+                    SCANNER UN DRONE
                 </Text>
+                <Button title="Go back" onPress={() => navigation.goBack()} />
             </View>
             <Camera style={styles.camera} type={type}>
                 <View style={styles.buttonContainer}>
@@ -39,7 +40,7 @@ const ScanScreen = () => {
                         : Camera.Constants.Type.back
                     );
                     }}>
-                    <Text style={styles.text}> Flip </Text>
+                    {/* <Text style={styles.text}> Flip </Text> */}
                 </TouchableOpacity>
                 </View>
             </Camera>
@@ -74,8 +75,16 @@ const styles = StyleSheet.create({
         flex: 9,
     },
     title: {
-        fontSize: 30,
-        color: "#fff"
+        marginBottom: 10,
+        marginTop: 10,
+        padding: 10,
+        borderRadius: 15,
+        color: "#3caae9",
+        letterSpacing: 2,
+        textAlign: "center",
+        fontSize: 25,
+        fontWeight: "bold",
+        textTransform: 'uppercase'
     },
     titleContainer: {
         flex: 1,

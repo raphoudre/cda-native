@@ -1,19 +1,13 @@
-import React, { useContext } from "react";
 import { Text, View, StyleSheet, Button, TouchableOpacity } from "react-native";
-import Spinner from "react-native-loading-spinner-overlay/lib";
-import { AuthContext } from "../context/AuthContext";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NavigationContainer } from '@react-navigation/native';
+import { useAuth } from "../context/AuthContext";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
  
 const HomeScreen = ({ navigation }) => {
-    const {userInfo, isLoading} = useContext(AuthContext)
 
-    const goToStock = () => {
-        navigation.navigate('Stock', {
-            screen: "Stock",
-        })
-    }
+    const Stack = createNativeStackNavigator();
+
+    const [user] = useAuth()
 
     const goToScan = () => {
         navigation.navigate('Scan', {
@@ -21,9 +15,9 @@ const HomeScreen = ({ navigation }) => {
         })
     }
 
-    const goToDetails = () => {
-        navigation.navigate('Details', {
-            screen: "DetailsScreen",
+    const goToStock = () => {
+        navigation.navigate('Stock', {
+            screen: "Stock",
         })
     }
 
@@ -34,17 +28,9 @@ const HomeScreen = ({ navigation }) => {
     }
  
     return (
-    <View style={styles.container}>
-        <Spinner visible={isLoading} />
-        <Text style={ styles.title }>ACCUEIL</Text>
-        <Text style={ styles.welcolmeUser }>Bienvenue {userInfo.user.firstName_u} {userInfo.user.lastName_u}</Text>
-
-        <TouchableOpacity
-            style={styles.loginScreenButton}
-            onPress={goToStock}
-            underlayColor='#fff'>
-            <Text style={styles.textBtn}>voir le stock</Text>
-        </TouchableOpacity>
+        <View style={styles.container}>
+        <Text style={ styles.title }>SKY DRONE - ACCUEIL</Text>
+        <Text style={ styles.welcolmeUser }>Bienvenue {user.user.firstName_u} {user.user.lastName_u}</Text>
 
         <TouchableOpacity
             style={styles.loginScreenButton}
@@ -55,10 +41,19 @@ const HomeScreen = ({ navigation }) => {
 
         <TouchableOpacity
             style={styles.loginScreenButton}
+            onPress={goToStock}
+            underlayColor='#fff'>
+            <Text style={styles.textBtn}>voir le stock</Text>
+        </TouchableOpacity>
+        
+
+
+        {/* <TouchableOpacity
+            style={styles.loginScreenButton}
             onPress={goToDetails}
             underlayColor='#fff'>
             <Text style={styles.textBtn}>détails</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <TouchableOpacity
             style={styles.logoutScreenButton}
@@ -73,7 +68,7 @@ const HomeScreen = ({ navigation }) => {
 }
 
 export default HomeScreen;
- 
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -93,7 +88,7 @@ const styles = StyleSheet.create({
     },
     welcolmeUser:{
         marginBottom: 20,
-        marginTop: 20,
+        marginTop: 10,
         padding: 10,
         borderRadius: 15,
         color: "#3caae9",
