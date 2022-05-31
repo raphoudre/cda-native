@@ -1,5 +1,5 @@
 import { React, useState } from 'react'
-import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Button } from "react-native";
+import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Button, ScrollView, KeyboardAvoidingView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
 import { BASE_URL } from '../config';
@@ -39,7 +39,9 @@ const LoginScreen = () => {
     }
  
     return (
+        <KeyboardAvoidingView style={{flex:1}}>
         <SafeAreaView style={styles.container}>
+            <ScrollView>
             <View>
             <Image style={styles.image} source={require("../../assets/img/droneLogo.png")} />
 
@@ -79,7 +81,9 @@ const LoginScreen = () => {
         <Text style={ styles.copyright }>© SKY DRONE 2022</Text>
 
     </View>
+    </ScrollView>
 </SafeAreaView>
+</KeyboardAvoidingView>
   );
 }
 

@@ -1,68 +1,86 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, Button, TouchableOpacity, SafeAreaView} from 'react-native';
-import { Camera } from 'expo-camera';
+import React, {useEffect, useState, useCallback } from 'react';
+import {View, Text, StyleSheet, Button, TouchableOpacity, Linking } from 'react-native';
+// import { Camera } from 'expo-camera';
+import { BarCodeScanner } from 'expo-barcode-scanner';
+import { BASE_URL } from '../config';
 
-
-
-const ScanScreen = ({ navigation }) => {
+const ScanScreen = () => {
     const [hasPermission, setHasPermission] = useState(null);
-    const [type, setType] = useState(Camera.Constants.Type.back);
+    const [scanned, setScanned] = useState(false);
+    const [text, setText] = useState('Not Yet Scanned');
 
-    useEffect(() => {
+    const askForCameraPermission = () => {
         (async () => {
-        const { status } = await Camera.requestCameraPermissionsAsync();
-        setHasPermission(status === 'granted');
-        })();
+            const { status } = await BarCodeScanner.requestPermissionsAsync();
+            setHasPermission(status == 'granted')
+        })()
+    }
+
+    // Request Camera Permission
+    useEffect(() => {
+        askForCameraPermission();
     }, []);
 
-    if (hasPermission === null) {
-        return <View />;
+    // When We Scan QR Code
+    const handleBarCodeScanned = ({ type, data }) => {
+        setScanned(true);
+        setText(data);
+        console.log('Type:' + type + '\nData:' + data);
     }
-    if (hasPermission === false) {
-        return <Text>No access to camera</Text>;
+
+    const OpenURLButton = ({ url, children }) => {
+        const handlePress = useCallback(async () => {
+            // Checking if the link is supported for links with custom URL scheme.
+            const supported = await Linking.canOpenURL(url);
+
+            if (supported) {
+            // Opening the link with some app, if the URL scheme is "http" the web link should be opened
+            // by some browser in the mobile
+                await Linking.openURL(url);
+            } else {
+                Alert.alert(`Don't know how to open this URL: ${url}`)
+            }
+        }, [url]);
+      
+        return <Button title={children} onPress={handlePress} />
     }
-    return(
+
+    // Check permission and return Screens
+    if( hasPermission === null){
+        return(
+            <View style={styles.container}>
+                <Text>Requesting for camera permission</Text>
+            </View>
+        )
+    }
+
+    if(hasPermission === false){
         <View style={styles.container}>
-            <View style={styles.titleContainer}>
-                <Text style={styles.title}>
-                    SCANNER UN DRONE
-                </Text>
-                <Button title="Go back" onPress={() => navigation.goBack()} />
-            </View>
-            <Camera style={styles.camera} type={type}>
-                <View style={styles.buttonContainer}>
-                <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => {
-                    setType(
-                        type === Camera.Constants.Type.back
-                        ? Camera.Constants.Type.front
-                        : Camera.Constants.Type.back
-                    );
-                    }}>
-                    {/* <Text style={styles.text}> Flip </Text> */}
-                </TouchableOpacity>
-                </View>
-            </Camera>
-            <View style={styles.buttonContainerDo}>
-                <TouchableOpacity
-                    style={styles.buttonDo}
-                    onPress={() => {
-                    
-                    
-                    }}>
-                    <Text style={styles.text}> Signaler un incident </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.buttonDo}
-                    onPress={() => {
-                    
-                    }}>
-                    <Text style={styles.text}> Rentrer manuellement </Text>
-                </TouchableOpacity>
-            </View>
+            <Text style={{margin: 10}}>No Access to Camera</Text>
+            <Button title={'Allow Camera'} onPress={() => askForCameraPermission()}></Button>
         </View>
+    }
+
+    // Return the view
+    return(
+    <View style={styles.container}>
+        <Text style={ styles.title }>SKY <Text style={ styles.titleBlack }>DR</Text>O<Text style={ styles.titleBlack }>NE</Text></Text>
+        <View style={styles.barcodebox}>
+            <BarCodeScanner
+                onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+                style={{ height: 400, width: 400}}/>
+        </View>
+
+        <OpenURLButton url={text}>{text}</OpenURLButton>
+
+        <TouchableOpacity
+            style={styles.logoutScreenButton}>
+            {scanned && <Button title={'SCANNER AUTRE DRONE'} onPress={() => setScanned(false)} style={styles.btnScan} color={'white'}></Button>}
+        </TouchableOpacity>
+
+    </View>
     )
+    
 }
 
 export default ScanScreen;
@@ -71,12 +89,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    camera: {
-        flex: 9,
-    },
     title: {
-        marginBottom: 10,
-        marginTop: 10,
+        marginBottom: 20,
+        marginTop: 20,
         padding: 10,
         borderRadius: 15,
         color: "#3caae9",
@@ -84,45 +99,37 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontSize: 25,
         fontWeight: "bold",
-        textTransform: 'uppercase'
     },
-    titleContainer: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center"
+    titleBlack:{
+        color: 'black'
     },
-    buttonContainer: {
-        flex: 1,
-        backgroundColor: 'transparent',
-        flexDirection: 'row',
-        margin: 20,
-    },
-    buttonContainerDo: {
-        flex: 1,
-        backgroundColor: 'white',
-        flexDirection: 'row',
-        margin: 20,
-    },
-    button: {
-        flex: 0.1,
-        alignSelf: 'flex-end',
-        alignItems: 'center',
-    },
-    buttonDo:{
-        flex: 1,
-        color: "white",
-        backgroundColor: "transparent",
-        alignSelf: 'center',
-        justifyContent: 'center',
-        alignItems: "center",
-        textAlign: 'center'
-    },
-    text: {
-        fontSize: 18,
-        color: 'white',
+    barcodebox:{
+        paddingBottom: 50,
         alignContent: 'center',
         alignItems: 'center',
-        textAlign: 'center',
-        textAlignVertical: 'center'
+        marginBottom: 0,
+        borderRadius: 25
     },
+    maintext:{
+        marginTop: 0,
+        fontSize: 20,
+        margin: 20,
+        alignSelf: 'center'
+    },
+    logoutScreenButton: {
+        alignSelf: "center",
+        width: 375,
+        borderRadius: 25,
+        height: 50,
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: 0,
+        backgroundColor: "#3caae9",
+        fontWeight: "bold",
+        marginTop: 25
+    },
+    btnScan: {
+        letterSpacing: 1,
+        fontSize: 15,
+    }
     });
