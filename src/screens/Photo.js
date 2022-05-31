@@ -8,6 +8,7 @@ const ScanScreen = () => {
     const [hasPermission, setHasPermission] = useState(null);
     const [scanned, setScanned] = useState(false);
     const [text, setText] = useState('Not Yet Scanned');
+    const [drone, setDrone] = useState({})
 
     const askForCameraPermission = () => {
         (async () => {
@@ -26,6 +27,10 @@ const ScanScreen = () => {
         setScanned(true);
         setText(data);
         console.log('Type:' + type + '\nData:' + data);
+        fetch(data)
+        .then((response) => response.json())
+        .then((json) => setDrone(json))
+         console.log(drone)
     }
 
     const OpenURLButton = ({ url, children }) => {
@@ -71,7 +76,8 @@ const ScanScreen = () => {
                 style={{ height: 400, width: 400}}/>
         </View>
 
-        <OpenURLButton url={text}>{text}</OpenURLButton>
+        <Text style={ styles.textNameDrone }>{drone.name_d}</Text>
+        <Text style={ styles.textStateDrone }>État actuel : {drone.state}</Text>
 
         <TouchableOpacity
             style={styles.logoutScreenButton}>
@@ -99,6 +105,18 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontSize: 25,
         fontWeight: "bold",
+    },
+    textNameDrone:{
+        padding: 5,
+        letterSpacing: 1,
+        fontSize: 20,
+        textAlign: "center",
+    },
+    textStateDrone:{
+        padding: 5,
+        letterSpacing: 1,
+        fontSize: 15,
+        textAlign: "center",
     },
     titleBlack:{
         color: 'black'

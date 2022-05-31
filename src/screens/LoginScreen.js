@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
 import { BASE_URL } from '../config';
 import { useAuth } from '../context/AuthContext';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+// import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
  
 const LoginScreen = () => {
     
@@ -12,7 +12,6 @@ const LoginScreen = () => {
     const [password, setPassword] = useState()
 
     const [isLoading, setIsLoading] = useState(false)
-
     const [_, setUser] = useAuth()
 
     const handleLogin = () => {

@@ -25,8 +25,7 @@ const StockPage = ({ navigation }) =>{
                 renderItem={({ item }) => 
                 <View style={styles.card}>
                     <Text style={styles.textDroneName}>{item.name_d}</Text>
-                    <Text style={styles.text}>Catégorie : {item.category_id}</Text>
-                    <Text style={styles.text}>Statut : {item.category_id}</Text>
+                    <Text style={styles.text}>Statut : {item.state}</Text>
                 </View>
             }
             />
