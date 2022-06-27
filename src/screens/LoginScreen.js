@@ -19,20 +19,17 @@ const LoginScreen = () => {
         axios({
             method: "POST",
             url: `${BASE_URL}/login`,
-            data:{
-                email,
-                password,
+            data: {
+                email: email,
+                password: password
             }
         })
         .then(res => {
             setUser(res.data)
-            console.log(res.data);
+            setIsLoading(false)
         })
-        .catch((e) => {
-            console.log(e);
+        .catch(e => {
             alert(e.message)
-        })
-        .finally(() => {
             setIsLoading(false)
         })
     }

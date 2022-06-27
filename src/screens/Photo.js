@@ -1,14 +1,17 @@
-import React, {useEffect, useState, useCallback } from 'react';
-import {View, Text, StyleSheet, Button, TouchableOpacity, Linking } from 'react-native';
-// import { Camera } from 'expo-camera';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import { BASE_URL } from '../config';
+import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 
-const ScanScreen = () => {
+const ScanScreen = ({ navigation }) => {
     const [hasPermission, setHasPermission] = useState(null);
     const [scanned, setScanned] = useState(false);
-    const [text, setText] = useState('Not Yet Scanned');
+    const [urlScanned, setUrlScanned] = useState({});
     const [drone, setDrone] = useState({})
+    const [state, setState] = useState({})
+    const [message, setMessage] = useState('')
+    const [user] = useAuth()
 
     const askForCameraPermission = () => {
         (async () => {
@@ -25,68 +28,98 @@ const ScanScreen = () => {
     // When We Scan QR Code
     const handleBarCodeScanned = ({ type, data }) => {
         setScanned(true);
-        setText(data);
+        setUrlScanned(data);
         console.log('Type:' + type + '\nData:' + data);
         fetch(data)
-        .then((response) => response.json())
-        .then((json) => setDrone(json))
-         console.log(drone)
+            .then((response) => response.json())
+            .then((json) => setDrone(json))
+        console.log(drone)
+    }
+    
+    const patchDroneToStock = async () => {
+        const response = await fetch('https://skydrone-api.herokuapp.com/api/v1/drones/61fa60d765b3c0001671b790', {
+            method: 'PATCH',
+            body: JSON.stringify({
+                state: 'En Stock',
+            }),
+            headers: {
+                'content-type': 'application/json; charset=UTF-8',
+                'Authorization': `Bearer ${user.token}`
+            },
+        })
+            .then((response) => response.json())
+            .then((json) => console.log(json))
     }
 
-    const OpenURLButton = ({ url, children }) => {
-        const handlePress = useCallback(async () => {
-            // Checking if the link is supported for links with custom URL scheme.
-            const supported = await Linking.canOpenURL(url);
-
-            if (supported) {
-            // Opening the link with some app, if the URL scheme is "http" the web link should be opened
-            // by some browser in the mobile
-                await Linking.openURL(url);
-            } else {
-                Alert.alert(`Don't know how to open this URL: ${url}`)
-            }
-        }, [url]);
-      
-        return <Button title={children} onPress={handlePress} />
+    const patchDroneToSAV = async () => {
+        const response = await fetch(urlScanned, {
+            method: 'PATCH',
+            body: JSON.stringify({
+                state: 'SAV',
+            }),
+            headers: {
+                'content-type': 'application/json; charset=UTF-8',
+                'Authorization': `Bearer ${user.token}`
+            },
+        })
+            .then((response) => response.json())
+            .then((json) => console.log(json))
     }
 
     // Check permission and return Screens
-    if( hasPermission === null){
-        return(
+    if (hasPermission === null) {
+        return (
             <View style={styles.container}>
                 <Text>Requesting for camera permission</Text>
             </View>
         )
     }
 
-    if(hasPermission === false){
+    if (hasPermission === false) {
         <View style={styles.container}>
-            <Text style={{margin: 10}}>No Access to Camera</Text>
+            <Text style={{ margin: 10 }}>No Access to Camera</Text>
             <Button title={'Allow Camera'} onPress={() => askForCameraPermission()}></Button>
         </View>
     }
 
     // Return the view
-    return(
-    <View style={styles.container}>
-        <Text style={ styles.title }>SKY <Text style={ styles.titleBlack }>DR</Text>O<Text style={ styles.titleBlack }>NE</Text></Text>
-        <View style={styles.barcodebox}>
-            <BarCodeScanner
-                onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-                style={{ height: 400, width: 400}}/>
+    return (
+        <View style={styles.container}>
+            <Text style={styles.title}>SKY <Text style={styles.titleBlack}>DR</Text>O<Text style={styles.titleBlack}>NE</Text></Text>
+            <View style={styles.barcodebox}>
+                <BarCodeScanner
+                    onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+                    style={{ height: 350, width: 400 }} />
+            </View>
+
+            <Text style={styles.textNameDrone}>{drone.name_d}</Text>
+            <Text style={drone.state == 'En Stock' ? styles.textStateDrone : styles.textStateDroneUnavailable}>{drone.state}</Text>
+            <Text style={styles.textStateDrone}>{}</Text>
+
+            <View style={styles.containerBtn}>
+                <TouchableOpacity
+                    style={styles.btnGoToStock}
+                    onPress={patchDroneToStock}
+                    underlayColor='#fff'>
+                    <Text style={styles.textBtnGoTo}>Entrée en stock</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={styles.btnGoToSAV}
+                    onPress={patchDroneToSAV}
+                    underlayColor='#fff'>
+                    <Text style={styles.textBtnGoTo} color={'white'} >Entrée au SAV</Text>
+                </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity
+                style={styles.btnScanNewItem}>
+                {scanned && <Button title={'SCANNER UN AUTRE DRONE'} onPress={() => setScanned(false)} color={'white'}></Button>}
+            </TouchableOpacity>
+
         </View>
-
-        <Text style={ styles.textNameDrone }>{drone.name_d}</Text>
-        <Text style={ styles.textStateDrone }>État actuel : {drone.state}</Text>
-
-        <TouchableOpacity
-            style={styles.logoutScreenButton}>
-            {scanned && <Button title={'SCANNER AUTRE DRONE'} onPress={() => setScanned(false)} style={styles.btnScan} color={'white'}></Button>}
-        </TouchableOpacity>
-
-    </View>
     )
-    
+
 }
 
 export default ScanScreen;
@@ -96,8 +129,8 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     title: {
-        marginBottom: 20,
-        marginTop: 20,
+        marginBottom: 10,
+        marginTop: 10,
         padding: 10,
         borderRadius: 15,
         color: "#3caae9",
@@ -106,35 +139,69 @@ const styles = StyleSheet.create({
         fontSize: 25,
         fontWeight: "bold",
     },
-    textNameDrone:{
+    titleBlack: {
+        color: 'black'
+    },
+    containerBtn: {
+        flexDirection: "row",
+        alignSelf: "center"
+    },
+    btnGoToStock: {
+        alignSelf: "center",
+        padding: 10,
+        margin: 10,
+        marginRight: 25,
+        borderRadius: 5,
+        backgroundColor: "forestgreen",
+    },
+    btnGoToSAV: {
+        alignSelf: "center",
+        padding: 10,
+        margin: 10,
+        borderRadius: 5,
+        backgroundColor: "firebrick",
+    },
+    textBtnGoTo: {
+        color: "white",
+        letterSpacing: 1,
+        fontWeight: "bold"
+    },
+    textStateDrone: {
+        padding: 10,
+        letterSpacing: 1,
+        fontSize: 15,
+        textAlign: "center",
+        color: "#3caae9",
+    },
+    textStateDroneUnavailable: {
+        color: 'tomato',
+        padding: 10,
+        letterSpacing: 1,
+        fontSize: 15,
+        textAlign: "center"
+    },
+    textNameDrone: {
         padding: 5,
         letterSpacing: 1,
         fontSize: 20,
         textAlign: "center",
+        textTransform: "uppercase",
+        fontWeight: "bold"
     },
-    textStateDrone:{
-        padding: 5,
-        letterSpacing: 1,
-        fontSize: 15,
-        textAlign: "center",
-    },
-    titleBlack:{
-        color: 'black'
-    },
-    barcodebox:{
-        paddingBottom: 50,
+    barcodebox: {
+        paddingBottom: 10,
         alignContent: 'center',
         alignItems: 'center',
         marginBottom: 0,
         borderRadius: 25
     },
-    maintext:{
+    maintext: {
         marginTop: 0,
         fontSize: 20,
         margin: 20,
         alignSelf: 'center'
     },
-    logoutScreenButton: {
+    btnScanNewItem: {
         alignSelf: "center",
         width: 375,
         borderRadius: 25,
@@ -144,10 +211,6 @@ const styles = StyleSheet.create({
         marginTop: 0,
         backgroundColor: "#3caae9",
         fontWeight: "bold",
-        marginTop: 25
-    },
-    btnScan: {
-        letterSpacing: 1,
-        fontSize: 15,
+        marginTop: 30
     }
-    });
+});

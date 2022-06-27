@@ -22,6 +22,7 @@ const StockPage = ({ navigation }) =>{
             <FlatList
                 style={styles.scroll}
                 data={data}
+                // keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => 
                 <View style={styles.card}>
                     <Text style={styles.textDroneName}>{item.name_d}</Text>
