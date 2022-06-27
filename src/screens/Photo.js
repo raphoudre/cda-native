@@ -35,9 +35,9 @@ const ScanScreen = ({ navigation }) => {
             .then((json) => setDrone(json))
         console.log(drone)
     }
-    
+
     const patchDroneToStock = async () => {
-        const response = await fetch('https://skydrone-api.herokuapp.com/api/v1/drones/61fa60d765b3c0001671b790', {
+        const response = await fetch(urlScanned, {
             method: 'PATCH',
             body: JSON.stringify({
                 state: 'En Stock',
@@ -92,31 +92,39 @@ const ScanScreen = ({ navigation }) => {
                     style={{ height: 350, width: 400 }} />
             </View>
 
-            <Text style={styles.textNameDrone}>{drone.name_d}</Text>
-            <Text style={drone.state == 'En Stock' ? styles.textStateDrone : styles.textStateDroneUnavailable}>{drone.state}</Text>
-            <Text style={styles.textStateDrone}>{}</Text>
+            {drone.state ?
+                <>
+                    <Text style={styles.textNameDrone}>{drone.name_d}</Text>
+                    <Text style={drone.state == 'En Stock' ? styles.textStateDrone : styles.textStateDroneUnavailable}>État du drone : {drone.state}</Text>
 
-            <View style={styles.containerBtn}>
-                <TouchableOpacity
-                    style={styles.btnGoToStock}
-                    onPress={patchDroneToStock}
-                    underlayColor='#fff'>
-                    <Text style={styles.textBtnGoTo}>Entrée en stock</Text>
-                </TouchableOpacity>
 
-                <TouchableOpacity
-                    style={styles.btnGoToSAV}
-                    onPress={patchDroneToSAV}
-                    underlayColor='#fff'>
-                    <Text style={styles.textBtnGoTo} color={'white'} >Entrée au SAV</Text>
-                </TouchableOpacity>
-            </View>
 
-            <TouchableOpacity
-                style={styles.btnScanNewItem}>
-                {scanned && <Button title={'SCANNER UN AUTRE DRONE'} onPress={() => setScanned(false)} color={'white'}></Button>}
-            </TouchableOpacity>
+                    <View style={styles.containerBtn}>
+                        {drone.state !== 'En Stock' ?
+                            <TouchableOpacity
+                                style={styles.btnGoToStock}
+                                onPress={patchDroneToStock}
+                                underlayColor='#fff'>
+                                <Text style={styles.textBtnGoTo}>Entrée en stock</Text>
+                            </TouchableOpacity>
+                            :
+                            <TouchableOpacity
+                                style={styles.btnGoToSAV}
+                                onPress={patchDroneToSAV}
+                                underlayColor='#fff'>
+                                <Text style={styles.textBtnGoTo} color={'white'} >Entrée au SAV</Text>
+                            </TouchableOpacity>
+                        }</View>
 
+                    <TouchableOpacity
+                        style={styles.btnScanNewItem}>
+                        {scanned && <Button title={'SCANNER UN AUTRE DRONE'} onPress={() => setScanned(false)} color={'white'}></Button>}
+                    </TouchableOpacity>
+
+                </>
+                :
+                <Text style={styles.textNameDrone}>Approchez un QR Code</Text>
+            }
         </View>
     )
 
