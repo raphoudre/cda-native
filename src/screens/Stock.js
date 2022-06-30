@@ -123,7 +123,6 @@ const StockPage = () =>{
                 keyExtractor={(data) => data.id}
                 renderItem={({ item }) =>
                     <View style={styles.card}>
-                        {console.log(item)}
                         <Pressable
                             onPress={() => setModal(item)}
                         >

@@ -7,8 +7,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const HomeScreen = ({ navigation }) => {
 
     const Stack = createNativeStackNavigator();
-
-    const [user] = useAuth()
+    const [user, setUser] = useAuth()
 
     const goToScan = () => {
         navigation.navigate('Drone SCAN', {
@@ -23,11 +22,9 @@ const HomeScreen = ({ navigation }) => {
     }
 
     const logout = () => {
-        navigation.navigate('Login', {
-            screen: "LoginScreen",
-        })
+        setUser(null);
     }
- 
+
     return (
         <View style={styles.container}>
         <Text style={ styles.titleSky }>SKY <Text style={ styles.titleBlack }>DR</Text>O<Text style={ styles.titleBlack }>NE</Text></Text>

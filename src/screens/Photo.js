@@ -41,7 +41,6 @@ const ScanScreen = ({ navigation }) => {
         fetch(data)
             .then((response) => response.json())
             .then((json) => setDrone(json))
-        console.log(drone)
     }
 
     const patchDroneToStock = async () => {
@@ -73,7 +72,7 @@ const ScanScreen = ({ navigation }) => {
         })
             .then((response) => response.json())
             .then((json) => console.log(json))
-        setTempState('En SAV');
+        setTempState('SAV');
     }
 
     // Check permission and return Screens
