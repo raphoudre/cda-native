@@ -11,13 +11,13 @@ const HomeScreen = ({ navigation }) => {
     const [user] = useAuth()
 
     const goToScan = () => {
-        navigation.navigate('Scanner Drone', {
+        navigation.navigate('Drone SCAN', {
             screen: "Photo",
         })
     }
 
     const goToStock = () => {
-        navigation.navigate('Stock', {
+        navigation.navigate('STOCK', {
             screen: "Stock",
         })
     }
@@ -30,8 +30,8 @@ const HomeScreen = ({ navigation }) => {
  
     return (
         <View style={styles.container}>
-        <Text style={ styles.title }>SKY <Text style={ styles.titleBlack }>DR</Text>O<Text style={ styles.titleBlack }>NE</Text></Text>
-        <Text style={ styles.welcolmeUser }>Bienvenue {user.user.firstName_u} {user.user.lastName_u}</Text>
+        <Text style={ styles.titleSky }>SKY <Text style={ styles.titleBlack }>DR</Text>O<Text style={ styles.titleBlack }>NE</Text></Text>
+        <Text style={ styles.welcolmeUser }>Bienvenue {user.user.firstName_u} {user.user.lastName_u} !</Text>
         
         <View style={styles.containerBtn}>
             <TouchableOpacity
@@ -55,10 +55,8 @@ const HomeScreen = ({ navigation }) => {
             style={styles.logoutScreenButton}
             onPress={logout}
             underlayColor='#fff'>
-            <Text style={styles.textBtnLogout}>déconnexion</Text>
+            <Text style={styles.textBtnLogout}>se déconnecter</Text>
         </TouchableOpacity>
-
-        <Text style={ styles.copyright }>© SKY DRONE 2022</Text>
     </View>
   );
 }
@@ -79,15 +77,14 @@ const styles = StyleSheet.create({
         height: 85,
         alignSelf: "center",
     },
-    title: {
+    titleSky: {
         marginBottom: 20,
-        marginTop: 20,
+        marginTop: 10,
         padding: 10,
-        borderRadius: 15,
         color: "#3caae9",
         letterSpacing: 2,
         textAlign: "center",
-        fontSize: 25,
+        fontSize: 30,
         fontWeight: "bold",
     },
     titleBlack:{
@@ -97,34 +94,24 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         marginTop: 10,
         padding: 10,
-        borderRadius: 15,
         color: "#3caae9",
         letterSpacing: 2,
         textAlign: "center",
         fontSize: 20,
-        fontWeight: "bold",
-    },
-    copyright: {
-        paddingTop: 45,
-        fontSize: 10,
     },
     styleBtn:{
         padding: 10,
         marginTop: 25,
         marginBottom: 25,
         backgroundColor:'#3caae9',
-        borderRadius:10,
         borderWidth: 1,
-        borderColor: '#3caae9',
     },
     loginScreenButton:{
         padding: 30,
         marginTop: 25,
         marginBottom: 25,
-        // backgroundColor:'#3caae9',
         borderRadius:20,
         borderWidth: 1,
-        // borderColor: '#3caae9'
     },
     logoutScreenButton:{
         padding: 10,

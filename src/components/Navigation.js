@@ -2,7 +2,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useAuth } from "../context/AuthContext";
 import HomeScreen from "../screens/HomeScreen";
 import LoginScreen from "../screens/LoginScreen";
-import DetailsScreen from "../screens/Details";
+// import DetailsScreen from "../screens/Details";
 import StockPage from "../screens/Stock";
 import ScanScreen from "../screens/Photo";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -31,11 +31,11 @@ const Navigator = () => {
             tabBarIcon: ({ focused, color, size }) => {
                 let iconName;
 
-                if (route.name === 'Accueil') {
+                if (route.name === 'HOME') {
                     iconName = focused ? 'md-home' : 'md-home-outline';
-                } else if (route.name === 'Stock') {
-                    iconName = focused ? 'analytics' : 'analytics-outline';
-                } else if (route.name === 'Scanner Drone') {
+                } else if (route.name === 'STOCK') {
+                    iconName = focused ? 'bar-chart' : 'bar-chart-outline';
+                } else if (route.name === 'Drone SCAN') {
                     iconName = focused ? 'ios-camera' : 'ios-camera-outline';
                 }
             return <Ionicons name={iconName} size={size} color={color} />;
@@ -44,9 +44,9 @@ const Navigator = () => {
             tabBarInactiveTintColor: 'gray',
             })}
         >
-            <tab.Screen name="Accueil" component={HomeScreen} />
-            <tab.Screen name="Scanner Drone" component={ScanScreen} />
-            <tab.Screen name="Stock" component={StockPage} />
+            <tab.Screen name="HOME" component={HomeScreen} />
+            <tab.Screen name="Drone SCAN" component={ScanScreen} />
+            <tab.Screen name="STOCK" component={StockPage} />
         </tab.Navigator>
         </>
 	)

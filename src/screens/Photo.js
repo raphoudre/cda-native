@@ -85,7 +85,7 @@ const ScanScreen = ({ navigation }) => {
     // Return the view
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>SKY <Text style={styles.titleBlack}>DR</Text>O<Text style={styles.titleBlack}>NE</Text></Text>
+            <Text style={styles.titleSky}>SKY <Text style={styles.titleBlack}>DR</Text>O<Text style={styles.titleBlack}>NE</Text></Text>
             <View style={styles.barcodebox}>
                 <BarCodeScanner
                     onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
@@ -95,7 +95,7 @@ const ScanScreen = ({ navigation }) => {
             {drone.state ?
                 <>
                     <Text style={styles.textNameDrone}>{drone.name_d}</Text>
-                    <Text style={drone.state == 'En Stock' ? styles.textStateDrone : styles.textStateDroneUnavailable}>État du drone : {drone.state}</Text>
+                    <Text style={styles.textState}>État du drone : <Text style={drone.state == 'En Stock' ? styles.textStateDrone : styles.textStateDroneUnavailable}>{drone.state}</Text></Text>
 
 
 
@@ -123,7 +123,7 @@ const ScanScreen = ({ navigation }) => {
 
                 </>
                 :
-                <Text style={styles.textNameDrone}>Approchez un QR Code</Text>
+                <Text style={styles.textApprocheQRCode}>Approchez un QR Code</Text>
             }
         </View>
     )
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    title: {
+    titleSky: {
         marginBottom: 10,
         marginTop: 10,
         padding: 10,
@@ -144,14 +144,14 @@ const styles = StyleSheet.create({
         color: "#3caae9",
         letterSpacing: 2,
         textAlign: "center",
-        fontSize: 25,
+        fontSize: 30,
         fontWeight: "bold",
     },
     titleBlack: {
         color: 'black'
     },
     containerBtn: {
-        flexDirection: "row",
+        // flexDirection: "row",
         alignSelf: "center"
     },
     btnGoToStock: {
@@ -180,18 +180,36 @@ const styles = StyleSheet.create({
         fontSize: 15,
         textAlign: "center",
         color: "#3caae9",
+        fontWeight: "bold"
     },
     textStateDroneUnavailable: {
         color: 'tomato',
         padding: 10,
         letterSpacing: 1,
         fontSize: 15,
-        textAlign: "center"
+        textAlign: "center",
+        fontWeight: "bold"
+    },
+    textState:{
+        padding: 10,
+        letterSpacing: 1,
+        fontSize: 15,
+        textAlign: "center",
+        fontWeight: "bold"
     },
     textNameDrone: {
         padding: 5,
         letterSpacing: 1,
         fontSize: 20,
+        textAlign: "center",
+        textTransform: "uppercase",
+        fontWeight: "bold"
+    },
+    textApprocheQRCode:{
+        marginTop: 50,
+        padding: 5,
+        letterSpacing: 1,
+        fontSize: 25,
         textAlign: "center",
         textTransform: "uppercase",
         fontWeight: "bold"
