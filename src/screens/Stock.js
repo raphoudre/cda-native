@@ -56,7 +56,7 @@ const StockPage = () =>{
                             onPress={() => setModalVisible(true)}
                         >
                             <Text style={styles.textDroneName}>{item.name_d}</Text>
-                            <Text style={styles.textState}>Statut : <Text style={item.state == 'En Stock' ? styles.textStateDrone : styles.textStateDroneUnavailable}>{item.state}</Text></Text>
+                            <Text style={styles.textState}>Statut : <Text style={item.state == 'En Stock' ? styles.textStateDrone : styles.textStateDroneUnavailable && item.state == 'En Location' ? styles.textStateDroneResa : styles.textStateDroneUnavailable}>{item.state}</Text></Text>
                         </Pressable>
                     </View>
                 }
@@ -169,6 +169,14 @@ const styles = StyleSheet.create({
     },
     textStateDroneUnavailable: {
         color: '#dc143c',
+        padding: 10,
+        letterSpacing: 1,
+        fontSize: 14,
+        textAlign: "center",
+        fontWeight: "bold"
+    },
+    textStateDroneResa:{
+        color: '#ff8c00',
         padding: 10,
         letterSpacing: 1,
         fontSize: 14,
