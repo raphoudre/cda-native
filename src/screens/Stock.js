@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, FlatList, Alert, Modal, Pressable } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Alert, Modal, Pressable, TouchableOpacity } from 'react-native';
 import { BASE_URL } from "../config";
+import { useAuth } from "../context/AuthContext";
 
 const StockPage = () =>{
 
     const [data, setData] = useState([])
     const [loading, setLoading] = useState()
     const [modalVisible, setModalVisible] = useState(false)
+    const [modalData, setModalData] = useState({})
+    const [user] = useAuth()
 
     useEffect(() => {
         fetch(`${BASE_URL}/drones`)
@@ -16,6 +19,43 @@ const StockPage = () =>{
         .finally(() => setLoading(false))
     }, [])
 
+    const setModal = (item) => {
+        setModalData(item);
+        setModalVisible(true);
+    }
+
+    const patchDroneToStock = async () => {
+        const response = await fetch(`${BASE_URL}/drones/${modalData._id}`, {
+            method: 'PATCH',
+            body: JSON.stringify({
+                state: 'En Stock',
+            }),
+            headers: {
+                'content-type': 'application/json; charset=UTF-8',
+                'Authorization': `Bearer ${user.token}`
+            },
+        })
+            .then((response) => response.json())
+            .then((json) => console.log(json))
+        setTempState('En Stock');
+    }
+
+    const patchDroneToSAV = async () => {
+        const response = await fetch(`${BASE_URL}/drones/${modalData._id}`, {
+            method: 'PATCH',
+            body: JSON.stringify({
+                state: 'SAV',
+            }),
+            headers: {
+                'content-type': 'application/json; charset=UTF-8',
+                'Authorization': `Bearer ${user.token}`
+            },
+        })
+            .then((response) => response.json())
+            .then((json) => console.log(json))
+        setTempState('En SAV');
+    }
+    
     return(
         <>
         <View style={styles.container}>
@@ -34,26 +74,58 @@ const StockPage = () =>{
                 
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
-                        <Text>HELLOOO !!</Text>
+                        <Text style={styles.textDroneNameModal}>{modalData.name_d}</Text>
+                        <Text style={styles.textState}>Statut : <Text style={modalData.state == 'En Stock' ? styles.textStateDrone : styles.textStateDroneUnavailable && modalData.state == 'En Location' ? styles.textStateDroneResa : styles.textStateDroneUnavailable}>{modalData.state}</Text></Text>
+                        
+                        {modalData.state ?
+                        <>
+                        <View style={styles.containerBtn}>
+                            {modalData.state == 'En Stock' ?
+                                <Pressable
+                                    style={[styles.button, styles.buttonToSAV]}
+                                    onPress={patchDroneToSAV}>
+                                    <Text style={styles.textStyle}>Entrée au SAV</Text>
+                                </Pressable>
+                            :
+                                <Pressable
+                                    style={[styles.button, styles.buttonToStock]}
+                                    onPress={patchDroneToSAV}>
+                                    <Text style={styles.textStyle}>Entrée en stock</Text>
+                                </Pressable>
+                            &&
+                            modalData.state == 'En Location' ?
+                                null
+                            :
+                                <Pressable 
+                                    style={[styles.button, styles.buttonToStock]}
+                                    onPress={patchDroneToSAV}>
+                                <Text style={styles.textStyle}>Entrée en stock</Text>
+                                </Pressable>
+                                
+                            }   
+                        </View>
+                        </>
+                        :
+                            null
+                        }
                             <Pressable
                                 style={[styles.button, styles.buttonClose]}
-                                onPress={() => setModalVisible(!modalVisible)}
-                            >
+                                onPress={() => setModalVisible(!modalVisible)}>
                                 <Text style={styles.textStyle}>FERMER</Text>
                             </Pressable>
                     </View>
                 </View>
             </Modal>
 
-                        
             <FlatList
                 style={styles.cell}
                 data={data}
                 keyExtractor={(data) => data.id}
-                renderItem={({ item }) => 
+                renderItem={({ item }) =>
                     <View style={styles.card}>
+                        {console.log(item)}
                         <Pressable
-                            onPress={() => setModalVisible(true)}
+                            onPress={() => setModal(item)}
                         >
                             <Text style={styles.textDroneName}>{item.name_d}</Text>
                             <Text style={styles.textState}>Statut : <Text style={item.state == 'En Stock' ? styles.textStateDrone : styles.textStateDroneUnavailable && item.state == 'En Location' ? styles.textStateDroneResa : styles.textStateDroneUnavailable}>{item.state}</Text></Text>
@@ -85,17 +157,22 @@ const StockPage = () =>{
 }
 
 const styles = StyleSheet.create({
+    containerBtn:{
+        display: "flex",
+        flexDirection: "row"
+    },
     centeredView: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
+        alignSelf: 'center',
         marginTop: 22
       },
       modalView: {
         margin: 20,
         backgroundColor: "white",
-        borderRadius: 20,
-        padding: 35,
+        borderRadius:20,
+        padding: 60,
         alignItems: "center",
         shadowColor: "#000",
         shadowOffset: {
@@ -109,18 +186,24 @@ const styles = StyleSheet.create({
       button: {
         borderRadius: 20,
         padding: 10,
-        elevation: 2
-      },
-      buttonOpen: {
-        backgroundColor: "#F194FF",
+        marginTop: 30,
+        elevation: 2,
       },
       buttonClose: {
-        backgroundColor: "#2196F3",
+        backgroundColor: "#3caae9",
+      },
+      buttonToSAV:{
+        backgroundColor: "firebrick",
+      },
+      buttonToStock:{
+        backgroundColor: "forestgreen",
       },
       textStyle: {
         color: "white",
         fontWeight: "bold",
-        textAlign: "center"
+        textAlign: "center",
+        textTransform: 'uppercase',
+        letterSpacing: 1
       },
       modalText: {
         marginBottom: 15,
@@ -216,6 +299,13 @@ const styles = StyleSheet.create({
         textTransform: 'uppercase',
         padding: 10,
     },
+    textDroneNameModal:{
+        fontSize: 14,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        textTransform: 'uppercase',
+        //padding: 10,
+    },
     title: {
         marginBottom: 20,
         marginTop: 20,
@@ -227,6 +317,21 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "bold",
         textTransform: 'uppercase'
+    },
+    btnGoToStock: {
+        alignSelf: "center",
+        padding: 10,
+        margin: 10,
+        marginRight: 25,
+        borderRadius: 5,
+        backgroundColor: "forestgreen",
+    },
+    btnGoToSAV: {
+        alignSelf: "center",
+        padding: 10,
+        margin: 10,
+        borderRadius: 5,
+        backgroundColor: "firebrick",
     }
 })
 

@@ -105,12 +105,10 @@ const ScanScreen = ({ navigation }) => {
             {drone.state ?
                 <>
                     <Text style={styles.textNameDrone}>{drone.name_d}</Text>
-                    <Text style={styles.textState}>État du drone : <Text style={checkIfTempState(drone.state) == 'En Stock' ? styles.textStateDrone : styles.textStateDroneUnavailable}>{checkIfTempState(drone.state) && checkIfTempState(drone.state) == 'En Location' ? styles.textStateDroneResa : styles.textStateDroneUnavailable}</Text></Text>
-
-
+                    <Text style={styles.textState}>État du drone : <Text style={checkIfTempState(drone.state) == 'En Stock' ? styles.textStateDrone : styles.textStateDroneUnavailable && drone.state == 'En Location' ? styles.textStateDroneResa : styles.textStateDroneUnavailable}>{checkIfTempState(drone.state)}</Text></Text>
 
                     <View style={styles.containerBtn}>
-                        {checkIfTempState(drone.state) !== 'En Stock' ?
+                        {checkIfTempState(drone.state) == 'En Stock' ?
                             <TouchableOpacity
                                 style={styles.btnGoToSAV}
                                 onPress={patchDroneToSAV}
