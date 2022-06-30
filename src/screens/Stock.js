@@ -7,6 +7,7 @@ const StockPage = () =>{
     const [data, setData] = useState([])
     const [loading, setLoading] = useState()
     const [modalVisible, setModalVisible] = useState(false)
+    const [modalData, setModalData] = useState({})
 
     useEffect(() => {
         fetch(`${BASE_URL}/drones`)
@@ -16,6 +17,11 @@ const StockPage = () =>{
         .finally(() => setLoading(false))
     }, [])
 
+    const setModal = (item) => {
+        setModalData(item);
+        setModalVisible(true);
+    }
+    
     return(
         <>
         <View style={styles.container}>
@@ -34,7 +40,8 @@ const StockPage = () =>{
                 
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
-                        <Text>HELLOOO !!</Text>
+                        <Text>HELLOOO !!{modalData._id}</Text>
+                        <Text>{modalData.name_d}</Text>
                             <Pressable
                                 style={[styles.button, styles.buttonClose]}
                                 onPress={() => setModalVisible(!modalVisible)}
@@ -44,16 +51,15 @@ const StockPage = () =>{
                     </View>
                 </View>
             </Modal>
-
-                        
             <FlatList
                 style={styles.cell}
                 data={data}
                 keyExtractor={(data) => data.id}
-                renderItem={({ item }) => 
+                renderItem={({ item }) =>
                     <View style={styles.card}>
+                        {console.log(item)}
                         <Pressable
-                            onPress={() => setModalVisible(true)}
+                            onPress={() => setModal(item)}
                         >
                             <Text style={styles.textDroneName}>{item.name_d}</Text>
                             <Text style={styles.textState}>Statut : <Text style={item.state == 'En Stock' ? styles.textStateDrone : styles.textStateDroneUnavailable}>{item.state}</Text></Text>

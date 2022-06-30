@@ -9,7 +9,7 @@ const ScanScreen = ({ navigation }) => {
     const [scanned, setScanned] = useState(false);
     const [urlScanned, setUrlScanned] = useState({});
     const [drone, setDrone] = useState({})
-    const [state, setState] = useState({})
+    const [tempState, setTempState] = useState()
     const [message, setMessage] = useState('')
     const [user] = useAuth()
 
@@ -24,9 +24,17 @@ const ScanScreen = ({ navigation }) => {
     useEffect(() => {
         askForCameraPermission();
     }, []);
+    const checkIfTempState = (display) =>{
+        if (tempState != null) {
+            return tempState;
+        } else {
+            return display;
+        }
+    } 
 
     // When We Scan QR Code
     const handleBarCodeScanned = ({ type, data }) => {
+        if(tempState != null) setTempState(null);
         setScanned(true);
         setUrlScanned(data);
         console.log('Type:' + type + '\nData:' + data);
@@ -49,6 +57,7 @@ const ScanScreen = ({ navigation }) => {
         })
             .then((response) => response.json())
             .then((json) => console.log(json))
+        setTempState('En Stock');
     }
 
     const patchDroneToSAV = async () => {
@@ -64,6 +73,7 @@ const ScanScreen = ({ navigation }) => {
         })
             .then((response) => response.json())
             .then((json) => console.log(json))
+        setTempState('En SAV');
     }
 
     // Check permission and return Screens
@@ -95,12 +105,12 @@ const ScanScreen = ({ navigation }) => {
             {drone.state ?
                 <>
                     <Text style={styles.textNameDrone}>{drone.name_d}</Text>
-                    <Text style={styles.textState}>État du drone : <Text style={drone.state == 'En Stock' ? styles.textStateDrone : styles.textStateDroneUnavailable}>{drone.state}</Text></Text>
+                    <Text style={styles.textState}>État du drone : <Text style={checkIfTempState(drone.state) == 'En Stock' ? styles.textStateDrone : styles.textStateDroneUnavailable}>{checkIfTempState(drone.state)}</Text></Text>
 
 
 
                     <View style={styles.containerBtn}>
-                        {drone.state !== 'En Stock' ?
+                        {checkIfTempState(drone.state) !== 'En Stock' ?
                             <TouchableOpacity
                                 style={styles.btnGoToStock}
                                 onPress={patchDroneToStock}
