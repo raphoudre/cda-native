@@ -1,13 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, FlatList, Alert, Modal, Pressable } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Alert, Modal, Pressable, TouchableOpacity } from 'react-native';
 import { BASE_URL } from "../config";
+import { useAuth } from "../context/AuthContext";
+
 
 const StockPage = () =>{
 
+    const [user] = useAuth()
     const [data, setData] = useState([])
     const [loading, setLoading] = useState()
     const [modalVisible, setModalVisible] = useState(false)
     const [modalData, setModalData] = useState({})
+    const [tempState, setTempState] = useState()
+    const [tempIndex, setTempIndex] = useState()
+
+    const checkIfTempState = (display) =>{
+        if (tempState != null) {
+            return tempState;
+        } else {
+            return display;
+        }
+    } 
 
     useEffect(() => {
         fetch(`${BASE_URL}/drones`)
@@ -17,11 +30,59 @@ const StockPage = () =>{
         .finally(() => setLoading(false))
     }, [])
 
-    const setModal = (item) => {
+    const updateState = (id, newStateName) => {
+        const newState = data.map(obj => {
+          // 👇️ if id equals 2, update country property
+          if (obj._id === id) {
+            return {...obj, state: newStateName};
+          }
+          // 👇️ otherwise return object as is
+          return obj;
+        });
+        setData(newState);
+      };
+
+    const setModal = (item, index) => {
+        if(tempState != null) setTempState(null);
+        setTempIndex(index);
         setModalData(item);
         setModalVisible(true);
     }
     
+    const patchDroneToStock = async (droneId) => {
+        const response = await fetch(`${BASE_URL}/drones/${droneId}`, {
+            method: 'PATCH',
+            body: JSON.stringify({
+                state: 'En Stock',
+            }),
+            headers: {
+                'content-type': 'application/json; charset=UTF-8',
+                'Authorization': `Bearer ${user.token}`
+            },
+        })
+            .then((response) => response.json())
+            .then((json) => console.log(json))
+        setTempState('En Stock');
+        updateState(droneId, 'En Stock');
+    }
+
+    const patchDroneToSAV = async (droneId) => {
+        const response = await fetch(`${BASE_URL}/drones/${droneId}`, {
+            method: 'PATCH',
+            body: JSON.stringify({
+                state: 'SAV',
+            }),
+            headers: {
+                'content-type': 'application/json; charset=UTF-8',
+                'Authorization': `Bearer ${user.token}`
+            },
+        })
+            .then((response) => response.json())
+            .then((json) => console.log(json))
+        setTempState('SAV');
+        updateState(droneId, 'SAV');
+    }
+
     return(
         <>
         <View style={styles.container}>
@@ -35,19 +96,36 @@ const StockPage = () =>{
                 onRequestClose={() => {
                     Alert.alert("Modal has been closed.");
                     setModalVisible(!modalVisible);
+                    setTempIndex(null);
                 }}
             >
                 
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
-                        <Text>HELLOOO !!{modalData._id}</Text>
                         <Text>{modalData.name_d}</Text>
-                            <Pressable
-                                style={[styles.button, styles.buttonClose]}
-                                onPress={() => setModalVisible(!modalVisible)}
-                            >
-                                <Text style={styles.textStyle}>FERMER</Text>
-                            </Pressable>
+                        <Text>{modalData.state}</Text>
+                        <View style={styles.containerBtn}>
+                        {checkIfTempState(modalData.state) !== 'En Stock' ?
+                            <TouchableOpacity
+                                style={styles.btnGoToStock}
+                                onPress={() => patchDroneToStock(modalData._id)}
+                                underlayColor='#fff'>
+                                <Text style={styles.textBtnGoTo}>Entrée en stock</Text>
+                            </TouchableOpacity>
+                            :
+                            <TouchableOpacity
+                                style={styles.btnGoToSAV}
+                                onPress={() => patchDroneToSAV(modalData._id)}
+                                underlayColor='#fff'>
+                                <Text style={styles.button} color={'white'} >Entrée au SAV</Text>
+                            </TouchableOpacity>
+                        }</View>
+                        <Pressable
+                            style={[styles.button, styles.buttonClose]}
+                            onPress={() => setModalVisible(!modalVisible)}
+                        >
+                            <Text style={styles.textStyle}>FERMER</Text>
+                        </Pressable>
                     </View>
                 </View>
             </Modal>
@@ -55,10 +133,10 @@ const StockPage = () =>{
                 style={styles.cell}
                 data={data}
                 keyExtractor={(data) => data.id}
-                renderItem={({ item }) =>
+                renderItem={({ item, index }) =>
                     <View style={styles.card}>
                         <Pressable
-                            onPress={() => setModal(item)}
+                            onPress={() => setModal(item, index)}
                         >
                             <Text style={styles.textDroneName}>{item.name_d}</Text>
                             <Text style={styles.textState}>Statut : <Text style={item.state == 'En Stock' ? styles.textStateDrone : styles.textStateDroneUnavailable}>{item.state}</Text></Text>
