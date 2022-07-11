@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, Button, TouchableOpacity, Image, TouchableHighligh } from "react-native";
+import { Text, View, StyleSheet, Button, TouchableOpacity, Image } from "react-native";
 import { useAuth } from "../context/AuthContext";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from "@react-native-async-storage/async-storage";

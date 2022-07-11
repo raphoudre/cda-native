@@ -98,7 +98,7 @@ const StockPage = () =>{
                             :
                                 <Pressable 
                                     style={[styles.button, styles.buttonToStock]}
-                                    onPress={patchDroneToSAV}>
+                                    onPress={patchDroneToStock}>
                                 <Text style={styles.textStyle}>Entrée en stock</Text>
                                 </Pressable>
                                 
@@ -111,7 +111,7 @@ const StockPage = () =>{
                             <Pressable
                                 style={[styles.button, styles.buttonClose]}
                                 onPress={() => setModalVisible(!modalVisible)}>
-                                <Text style={styles.textStyle}>FERMER</Text>
+                                <Text style={styles.textStyle}>RETOUR</Text>
                             </Pressable>
                     </View>
                 </View>
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
       },
       button: {
         borderRadius: 20,
-        padding: 10,
+        padding: 20,
         marginTop: 30,
         elevation: 2,
       },
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
     textStateDrone: {
         padding: 10,
         letterSpacing: 1,
-        fontSize: 14,
+        fontSize: 18,
         textAlign: "center",
         color: "#32cd32",
         fontWeight: "bold"
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
         color: '#dc143c',
         padding: 10,
         letterSpacing: 1,
-        fontSize: 14,
+        fontSize: 18,
         textAlign: "center",
         fontWeight: "bold"
     },
@@ -261,14 +261,14 @@ const styles = StyleSheet.create({
         color: '#ff8c00',
         padding: 10,
         letterSpacing: 1,
-        fontSize: 14,
+        fontSize: 18,
         textAlign: "center",
         fontWeight: "bold"
     },
     textState:{
         padding: 10,
         letterSpacing: 1,
-        fontSize: 14,
+        fontSize: 18,
         textAlign: "center",
     },
     card:{
@@ -292,14 +292,14 @@ const styles = StyleSheet.create({
     },
     textDroneName:{
         flex: 1,
-        fontSize: 14,
+        fontSize: 18,
         fontWeight: 'bold',
         textAlign: 'center',
         textTransform: 'uppercase',
         padding: 10,
     },
     textDroneNameModal:{
-        fontSize: 14,
+        fontSize: 24,
         fontWeight: 'bold',
         textAlign: 'center',
         textTransform: 'uppercase',
