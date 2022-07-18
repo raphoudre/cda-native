@@ -104,24 +104,32 @@ const ScanScreen = ({ navigation }) => {
             {drone.state ?
                 <>
                     <Text style={styles.textNameDrone}>{drone.name_d}</Text>
-                    <Text style={styles.textState}>État du drone : <Text style={checkIfTempState(drone.state) == 'En Stock' ? styles.textStateDrone : styles.textStateDroneUnavailable}>{checkIfTempState(drone.state)}</Text></Text>
-
-
+                    <Text style={styles.textState}>État du drone : <Text style={checkIfTempState(drone.state) == 'En Stock' ? styles.textStateDrone : styles.textStateDroneUnavailable && drone.state == 'En Location' ? styles.textStateDroneResa : styles.textStateDroneUnavailable}>{checkIfTempState(drone.state)}</Text></Text>
 
                     <View style={styles.containerBtn}>
-                        {checkIfTempState(drone.state) !== 'En Stock' ?
-                            <TouchableOpacity
-                                style={styles.btnGoToStock}
-                                onPress={patchDroneToStock}
-                                underlayColor='#fff'>
-                                <Text style={styles.textBtnGoTo}>Entrée en stock</Text>
-                            </TouchableOpacity>
-                            :
+                        {checkIfTempState(drone.state) == 'En Stock' ?
                             <TouchableOpacity
                                 style={styles.btnGoToSAV}
                                 onPress={patchDroneToSAV}
                                 underlayColor='#fff'>
                                 <Text style={styles.textBtnGoTo} color={'white'} >Entrée au SAV</Text>
+                            </TouchableOpacity>
+                            :
+                            <TouchableOpacity disabled
+                                style={styles.btnGoToStock}
+                                onPress={patchDroneToStock}
+                                underlayColor='#fff'>
+                                <Text style={styles.textBtnGoTo}>Entrée en stock</Text>
+                            </TouchableOpacity>
+                            &&
+                                drone.state == 'En Location' ?
+                                null
+                                :
+                                <TouchableOpacity
+                                style={styles.btnGoToStock}
+                                onPress={patchDroneToStock}
+                                underlayColor='#fff'>
+                                <Text style={styles.textBtnGoTo}>Entrée en stock</Text>
                             </TouchableOpacity>
                         }</View>
 
@@ -130,9 +138,11 @@ const ScanScreen = ({ navigation }) => {
                         {scanned && <Button title={'SCANNER UN AUTRE DRONE'} onPress={() => setScanned(false)} color={'white'}></Button>}
                     </TouchableOpacity>
 
+
                 </>
                 :
                 <Text style={styles.textApprocheQRCode}>Approchez un QR Code</Text>
+
             }
         </View>
     )
@@ -188,14 +198,22 @@ const styles = StyleSheet.create({
         letterSpacing: 1,
         fontSize: 15,
         textAlign: "center",
-        color: "#3caae9",
+        color: "#32cd32",
         fontWeight: "bold"
     },
     textStateDroneUnavailable: {
-        color: 'tomato',
+        color: '#dc143c',
         padding: 10,
         letterSpacing: 1,
         fontSize: 15,
+        textAlign: "center",
+        fontWeight: "bold"
+    },
+    textStateDroneResa:{
+        color: '#ff8c00',
+        padding: 10,
+        letterSpacing: 1,
+        fontSize: 14,
         textAlign: "center",
         fontWeight: "bold"
     },
